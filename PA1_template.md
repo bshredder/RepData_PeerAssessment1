@@ -23,7 +23,9 @@ library(lubridate)
 
 ```r
 # read in the data
-unzip("activity.zip")
+if(!file.exists("activity.csv")){
+  unzip("activity.zip")
+}
 data <- read.csv( "activity.csv", header=TRUE, sep=",")
 ```
 
@@ -41,34 +43,22 @@ data$date <- ymd(as.character(data$date))
   
   
 
-*Make a histogram of the total number of steps taken each day*
-
 ![](PA1_template_files/figure-html/unnamed-chunk-1-1.png) 
 
 
 *Calculate the mean and median total number of steps taken per day*
 
-*mean total number of steps taken per day*
 
-
-```r
-mean( data$steps, na.rm = TRUE )
-```
-
-```
-## [1] 37.3826
-```
-
-*median total number of steps taken per day*
 
 
 ```r
-median( data$steps, na.rm = TRUE )
+meanTotalSteps <- mean( sumStepsPerDay, na.rm = TRUE )
+medianTotalSteps <- median( sumStepsPerDay, na.rm = TRUE )
 ```
 
-```
-## [1] 0
-```
+**The mean of the total number of steps taken per day is 10766.19**
+
+**The median of the total number of steps taken per day is 10765**
 
 
 ## What is the average daily activity pattern?
@@ -93,16 +83,14 @@ abline( v=maxStepsInterval, lty=2, col="red", lwd="5")
 text(maxStepsInterval,10,maxStepsInterval) 
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
 
 
 *Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?*
 
 
-```
-## [1] "Interval: 104 contains the maximum number of steps, which is (206.169811320755)"
-```
 
+**The interval 104 contains the ave maximimum number of steps, which is 206.17**
 
 ## Imputing missing values
   
@@ -116,14 +104,9 @@ numNAs <- function( data ) {
 	isNA <- is.na(data$steps)
 	return (sum(isNA))
 }
-
-# calculate and display the total number of NAs in ORIGINAL dataset
-print(sprintf("Total number of NAs = %s Which is %s percent", numNAs( data ), mean(is.na(data$steps))*100 ) )
 ```
 
-```
-## [1] "Total number of NAs = 2304 Which is 13.1147540983607 percent"
-```
+**Total number of NAs = 2304 Which is 13.11 percent**
 
 
 *Devise a strategy for filling in all of the missing values in the dataset. Strategy is to replace NAs with ave/day* 
@@ -140,7 +123,7 @@ cleansedData$steps[ is.na(cleansedData$steps)] <- mean(cleansedData$steps, rm.na
 
 *Make a histogram of the total number of steps taken each day*
 
-![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
 
 
 *Calculate and report the mean and median total number of steps taken per day*
@@ -150,11 +133,11 @@ cleansedData$steps[ is.na(cleansedData$steps)] <- mean(cleansedData$steps, rm.na
 
 ```r
 # calculate the mean across all dates
-mean(cleansedData$steps, na.rm=TRUE)
+mean(sumStepsPerDayCleansed, na.rm=TRUE)
 ```
 
 ```
-## [1] 37.3826
+## [1] 10766
 ```
 
 **Median steps per day of cleansed data*
@@ -162,11 +145,11 @@ mean(cleansedData$steps, na.rm=TRUE)
 
 ```r
 # calculate median across all dates
-median(cleansedData$steps, na.rm=TRUE)
+median(sumStepsPerDayCleansed, na.rm=TRUE)
 ```
 
 ```
-## [1] 0
+## [1] 10765
 ```
 
 
@@ -222,5 +205,5 @@ cleansedData$DoW <- as.factor(sapply(cleansedData$date, dayOfWeekFactor))
 
 *Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). The plot should look something like the following, which was created using simulated data:*
 
-![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
 
