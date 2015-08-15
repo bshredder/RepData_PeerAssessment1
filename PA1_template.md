@@ -1,11 +1,6 @@
+# Reproducible Research: Peer Assessment 1
+Bill Schroeder  
 
----
-title: "Reproducible Research: Peer Assessment 1"
-author: "Bill Schroeder"
-output: 
-  html_document:
-    keep_md: true
----
 
 
 
@@ -15,33 +10,30 @@ output:
 
 *Check for and insall required libraries*
 
-```{r checkForLubridateChunk}
 
+```r
 # check for required packages
 if("lubridate" %in% rownames(installed.packages() ) == FALSE){
   install.packages("lubridate")}
 library(lubridate)
-
 ```
 
 *Load input file*
 
-```{r loadDataChunk}
 
+```r
 # read in the data
 unzip("activity.zip")
 data <- read.csv( "activity.csv", header=TRUE, sep=",")
-
 ```
 
 
 *Process/transform the data into a format suitable for your analysis*
 
-```{r convertDatesChunk}
 
+```r
 # convert the dates (y/m/d) from factors to dates
 data$date <- ymd(as.character(data$date))
-
 ```
 
 
@@ -51,33 +43,31 @@ data$date <- ymd(as.character(data$date))
 
 *Make a histogram of the total number of steps taken each day*
 
-```{r, echo=FALSE}
-
-# calculate the sum of steps per date
-sumStepsPerDay <- tapply (data$steps, data$date , sum)
-
-# create a histogram 
-hist( sumStepsPerDay, xlab="Steps/Day", ylab="Frequency", main="Total steps per day" )
-
-```
+![](PA1_template_files/figure-html/unnamed-chunk-1-1.png) 
 
 
 *Calculate the mean and median total number of steps taken per day*
 
 *mean total number of steps taken per day*
 
-```{r}
 
+```r
 mean( data$steps, na.rm = TRUE )
+```
 
+```
+## [1] 37.3826
 ```
 
 *median total number of steps taken per day*
 
-```{r}
 
+```r
 median( data$steps, na.rm = TRUE )
+```
 
+```
+## [1] 0
 ```
 
 
@@ -86,8 +76,8 @@ median( data$steps, na.rm = TRUE )
   
 *Make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)*  
 
-```{r}
 
+```r
 # calculate the mean number of steps for each interval
 meanStepsPerInterval <- tapply (data$steps, data$interval, mean, na.rm=TRUE)
 
@@ -101,22 +91,16 @@ maxStepsInterval <- match( maxSteps, meanStepsPerInterval )
 plot(meanStepsPerInterval , type="l", xlab="interval", ylab="ave/steps")
 abline( v=maxStepsInterval, lty=2, col="red", lwd="5")
 text(maxStepsInterval,10,maxStepsInterval) 
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
 
 
 *Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?*
 
-```{r echo=FALSE}
 
-# find the maximum mean value across all intervals
-maxSteps <- max(meanStepsPerInterval) 
-
-# find the interval that contains the maximum mean value
-maxStepsInterval <- match( maxSteps, meanStepsPerInterval )
-
-print(sprintf("Interval: %s contains the maximum number of steps, which is (%s)", maxStepsInterval, maxSteps))
-
+```
+## [1] "Interval: 104 contains the maximum number of steps, which is (206.169811320755)"
 ```
 
 
@@ -125,7 +109,8 @@ print(sprintf("Interval: %s contains the maximum number of steps, which is (%s)"
   
 *Calculate and report the total number of missing values in the dataset*  
   
-```{r}
+
+```r
 # function to calculate total number of NAs
 numNAs <- function( data ) {
 	isNA <- is.na(data$steps)
@@ -134,7 +119,10 @@ numNAs <- function( data ) {
 
 # calculate and display the total number of NAs in ORIGINAL dataset
 print(sprintf("Total number of NAs = %s Which is %s percent", numNAs( data ), mean(is.na(data$steps))*100 ) )
+```
 
+```
+## [1] "Total number of NAs = 2304 Which is 13.1147540983607 percent"
 ```
 
 
@@ -142,46 +130,43 @@ print(sprintf("Total number of NAs = %s Which is %s percent", numNAs( data ), me
 **AND**
 *Create a new dataset that is equal to the original dataset but with the missing data filled in*
 
-```{r}
 
+```r
 # clean the original data - replace NAs with average for day
 cleansedData <- data
 cleansedData$steps[ is.na(cleansedData$steps)] <- mean(cleansedData$steps, rm.na=TRUE)
-
 ```
 
 
 *Make a histogram of the total number of steps taken each day*
 
-```{r echo=FALSE}
-
-# calculate the sum of steps per date
-sumStepsPerDayCleansed <- tapply (cleansedData$steps, cleansedData$date , sum)
-
-# create a histogram of the sum of steps per day
-hist(sumStepsPerDayCleansed, xlab="Steps/Day", ylab="Frequency", main="Total steps per day - cleansed data set")
-
-```
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
 
 
 *Calculate and report the mean and median total number of steps taken per day*
 
 **Mean steps per day of cleansed data*
 
-```{r}
 
+```r
 # calculate the mean across all dates
 mean(cleansedData$steps, na.rm=TRUE)
+```
 
+```
+## [1] 37.3826
 ```
 
 **Median steps per day of cleansed data*
 
-```{r}
 
+```r
 # calculate median across all dates
 median(cleansedData$steps, na.rm=TRUE)
+```
 
+```
+## [1] 0
 ```
 
 
@@ -189,23 +174,13 @@ median(cleansedData$steps, na.rm=TRUE)
 
 *Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?*
 
-```{r echo=FALSE}
 
-meanDif <- mean(cleansedData$steps, na.rm=TRUE) -  mean( data$steps, na.rm = TRUE ) 
-medianDif <- median(cleansedData$steps, na.rm=TRUE) -  median( data$steps, na.rm = TRUE )
+```
+## [1] "Cleaning the data did NOT impact the mean"
+```
 
-if(meanDif != 0){
-  print(sprintf("Cleaning the data DID impact the mean by %s ", meanDif) )
-} else {
-  print("Cleaning the data did NOT impact the mean")
-}
-
-if(medianDif != 0){
-  print(sprintf("Cleaning the data DID impact the median by %s ", medianDif) )
-} else {
-  print("Cleaning the data did NOT impact the median")
-}
-
+```
+## [1] "Cleaning the data did NOT impact the median"
 ```
 
 
@@ -213,13 +188,25 @@ if(medianDif != 0){
 
 *Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.*
 
-```{r}
+
+```r
 # check if package "chron" is installed
 if("chron" %in% rownames(installed.packages() ) == FALSE){
   install.packages("chron")
 }
 library("chron")
+```
 
+```
+## 
+## Attaching package: 'chron'
+## 
+## The following objects are masked from 'package:lubridate':
+## 
+##     days, hours, minutes, seconds, years
+```
+
+```r
 # function returns if date is a weekend or weekday
 dayOfWeekFactor <- function( date ){
   if( TRUE == factor(is.weekend(date) )){ 
@@ -231,36 +218,9 @@ dayOfWeekFactor <- function( date ){
 
 # Create a new factor variable in the dataset with two levels# "weekday" and "weekend" 
 cleansedData$DoW <- as.factor(sapply(cleansedData$date, dayOfWeekFactor))
-
 ```
 
 *Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). The plot should look something like the following, which was created using simulated data:*
 
-```{r echo=FALSE}
-
-# check if package "lattice" is installed
-if("lattice" %in% rownames(installed.packages() ) == FALSE){
-  install.packages("lattice")
-}
-library("lattice")
-
-
-# create time series of intervals and steps on weekdays
-weekdayData <- cleansedData[cleansedData$DoW == "weekday",]
-weekdayData <- tapply (weekdayData$steps, weekdayData$interval, mean, na.rm=TRUE)
-
-# create time series of intervals and steps on weekend
-weekendData <- cleansedData[cleansedData$DoW == "weekend",]
-weekendData <- tapply (weekendData$steps, weekendData$interval, mean, na.rm=TRUE)
-
-
-# create a timeseris panel plot of ave steps taken on weekend vs weekdays
-par(mfrow=c(2,1)) 
-plot(weekendData, type="l", xlab="interval", ylab="ave/steps")
-title("Weekend")
-plot(weekdayData, type="l", xlab="interval", ylab="ave/steps")
-title("Weekday")
-
-
-```
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
 
