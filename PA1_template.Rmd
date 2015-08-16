@@ -16,7 +16,7 @@ options(scipen = 999, digits = 2)
   
   
 
-*Check for and insall required libraries*
+* Check for and install required libraries
 
 ```{r checkForLubridateChunk}
 
@@ -27,7 +27,7 @@ library(lubridate)
 
 ```
 
-*Load input file*
+* Load input file
 
 ```{r loadDataChunk}
 
@@ -40,7 +40,7 @@ data <- read.csv( "activity.csv", header=TRUE, sep=",")
 ```
 
 
-*Process/transform the data into a format suitable for your analysis*
+* Process/transform the data into a format suitable for your analysis
 
 ```{r convertDatesChunk}
 
@@ -65,26 +65,27 @@ hist( sumStepsPerDay, xlab="Steps/Day", ylab="Frequency", main="Histogram Total 
 ```
 
 
-*Calculate the mean and median total number of steps taken per day*
+* Calculate the mean and median total number of steps taken per day
 
 
 
 ```{r}
 
+sumStepsPerDay <- tapply (data$steps, data$date , sum)
 meanTotalSteps <- mean( sumStepsPerDay, na.rm = TRUE )
 medianTotalSteps <- median( sumStepsPerDay, na.rm = TRUE )
 
 ```
 
-**The mean of the total number of steps taken per day is `r meanTotalSteps`**
+* The mean of the total number of steps taken per day is **`r meanTotalSteps`** 
 
-**The median of the total number of steps taken per day is `r medianTotalSteps`**
+* The median of the total number of steps taken per day is **`r medianTotalSteps`**
 
 
 ## What is the average daily activity pattern?
   
   
-*Make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)*  
+* Make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 ```{r}
 
@@ -105,9 +106,9 @@ text(maxStepsInterval,10,maxStepsInterval)
 ```
 
 
-*Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?*
+* Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r echo=FALSE}
+```{r}
 
 # find the maximum mean value across all intervals
 maxSteps <- max(meanStepsPerInterval) 
@@ -117,12 +118,14 @@ maxStepsInterval <- match( maxSteps, meanStepsPerInterval )
 
 ```
 
-**The interval `r maxStepsInterval` contains the ave maximimum number of steps, which is `r maxSteps`**
+* Report the 5-minute interval that, on average, contains the maximum number of steps
+    - The interval **`r maxStepsInterval`** contains the ave maximimum number of steps, which is **`r maxSteps`**  
+    
 
 ## Imputing missing values
   
   
-*Calculate and report the total number of missing values in the dataset*  
+* Calculate and report the total number of missing values in the dataset  
   
 ```{r}
 # function to calculate total number of NAs
@@ -133,12 +136,13 @@ numNAs <- function( data ) {
 
 ```
 
-**Total number of NAs = `r numNAs( data )` Which is `r mean(is.na(data$steps))*100` percent**
+* Total number of NAs = **`r numNAs( data )`** Which is **`r mean(is.na(data$steps))*100`%**
 
 
-*Devise a strategy for filling in all of the missing values in the dataset. Strategy is to replace NAs with ave/day* 
-**AND**
-*Create a new dataset that is equal to the original dataset but with the missing data filled in*
+* Devise a strategy for filling in all of the missing values in the dataset. Strategy is to replace NAs with ave/day
+      + **Fill all mission values with the average steps per day**
+
+* Create a new dataset that is equal to the original dataset but with the missing data filled in
 
 ```{r}
 
@@ -149,7 +153,7 @@ cleansedData$steps[ is.na(cleansedData$steps)] <- mean(cleansedData$steps, rm.na
 ```
 
 
-*Make a histogram of the total number of steps taken each day*
+* Make a histogram of the total number of steps taken each day
 
 ```{r echo=FALSE}
 
@@ -162,20 +166,13 @@ hist(sumStepsPerDayCleansed, xlab="Steps/Day", ylab="Frequency", main="Total ste
 ```
 
 
-*Calculate and report the mean and median total number of steps taken per day*
+* Calculate and report the mean and median total number of steps taken per day
 
-**Mean steps per day of cleansed data*
 
 ```{r}
 
 # calculate the mean across all dates
 mean(sumStepsPerDayCleansed, na.rm=TRUE)
-
-```
-
-**Median steps per day of cleansed data*
-
-```{r}
 
 # calculate median across all dates
 median(sumStepsPerDayCleansed, na.rm=TRUE)
@@ -183,11 +180,10 @@ median(sumStepsPerDayCleansed, na.rm=TRUE)
 ```
 
 
+* Do these values differ from the estimates from the first part of the assignment? 
+* What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-
-*Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?*
-
-```{r echo=FALSE}
+```{r}
 
 meanDif <- mean(cleansedData$steps, na.rm=TRUE) -  mean( data$steps, na.rm = TRUE ) 
 medianDif <- median(cleansedData$steps, na.rm=TRUE) -  median( data$steps, na.rm = TRUE )
@@ -209,7 +205,7 @@ if(medianDif != 0){
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-*Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.*
+* Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.*
 
 ```{r}
 # check if package "chron" is installed
@@ -232,16 +228,10 @@ cleansedData$DoW <- as.factor(sapply(cleansedData$date, dayOfWeekFactor))
 
 ```
 
-*Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). The plot should look something like the following, which was created using simulated data:*
+* Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
+
 
 ```{r echo=FALSE}
-
-# check if package "lattice" is installed
-if("lattice" %in% rownames(installed.packages() ) == FALSE){
-  install.packages("lattice")
-}
-library("lattice")
-
 
 # create time series of intervals and steps on weekdays
 weekdayData <- cleansedData[cleansedData$DoW == "weekday",]
@@ -253,12 +243,16 @@ weekendData <- tapply (weekendData$steps, weekendData$interval, mean, na.rm=TRUE
 
 
 # create a timeseris panel plot of ave steps taken on weekend vs weekdays
-par(mfrow=c(2,1)) 
-plot(weekendData, type="l", xlab="interval", ylab="ave/steps")
-title("Weekend")
-plot(weekdayData, type="l", xlab="interval", ylab="ave/steps")
-title("Weekday")
+par(mfrow=c(2,1))
+par(mai = c(0, 1, 1, 0))
+plot(weekendData, type="l", xaxt="n", ylab="ave steps")
+legend('topright',"WeekEND")
+title("Week day/end ave steps per interval")
+par(mai = c(1, 1, 0, 0))
+plot(weekdayData, type="l", xlab="interval", ylab = "ave steps")
+legend('topright',"WeekDAY")
 
 
 ```
 
+  
